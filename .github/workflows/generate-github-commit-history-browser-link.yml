@@ -51,7 +51,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ env.REPO }}
+          repository: "https://github.com/${{ env.REPO }}.git"
           ref: ${{ env.BRANCH }}
           fetch-depth: 0
           sparse-checkout: '.'
