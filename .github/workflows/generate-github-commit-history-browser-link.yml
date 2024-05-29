@@ -52,6 +52,7 @@ jobs:
         with:
           repository: ${{ env.REPO }}
           ref: ${{ env.BRANCH }}
+          depth: 0
 
       - name: Generate URL
         id: generate-url
