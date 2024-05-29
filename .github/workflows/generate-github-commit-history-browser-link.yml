@@ -1,0 +1,17 @@
+name: "Generate URL for viewving GitHub Commit hisotyr"
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'owner/repo'
+        required: true
+        type: string
+      branch:
+        description: 'Test scenario tags, default is the HEAD branch'
+        required: false
+        type: string
+      since-ref:
+        description: 'Ref from which the history will be browsable, default is from the initial commit of the branch'
+        type: string
+        required: false
