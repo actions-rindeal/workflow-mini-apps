@@ -36,7 +36,18 @@ jobs:
           SINCE_REF: ${{ github.event.inputs.since-ref }}
         run: |
           REPO="${REPO//[[:space:]]/}"
-          REPO="${REPO#https://github.com/}"
+          if [[ "$REPO" =~ ^https://github.com/ ]]; then
+            REPO="${REPO#https://github.com/}"
+            IFS='/' read -ra ADDR <<< "$REPO"
+            OWNER="${ADDR[0]}"
+            REPO_NAME="${ADDR[1]}"
+            if (( ${#ADDR[@]} >= 2 )) && [[ "${ADDR[2]}" == "tree" ]] ; then
+              BRANCH="$(IFS='/'; printf "%s" "${ADDR[*]:2}")"
+              BRANCH="${BRANCH%%\?*}"
+            fi
+            REPO="${OWNER}/${REPO_NAME}"
+            REPO="${REPO%.git}"
+          fi
           BRANCH="${BRANCH//[[:space:]]/}"
           SINCE_REF="${SINCE_REF//[[:space:]]/}"
           if [[ ! "$REPO" =~ ^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$ ]]; then
