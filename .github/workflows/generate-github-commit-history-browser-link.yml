@@ -1,4 +1,4 @@
-name: "Generate URL for viewing GitHub Commit history"
+name: "Generate URL for viewing GitHub Commit history ${{ github.event.inputs.repo }}"
 
 on:
   workflow_dispatch:
