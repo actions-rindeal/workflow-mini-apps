@@ -37,7 +37,7 @@ jobs:
           BRANCH: ${{ inputs.branch }}
           SINCE_REF: ${{ inputs.since-ref }}
         run: |
-          set-failed() { printf "::error title=$1::${2-.}\n" "${@:2}" ; exit 123 ; }
+          set-failed() { printf "::error title=$1::${2-$1}\n" "${@:2}" ; exit 123 ; }
 
           REPO="${REPO//[[:space:]]/}"
           if [[ "$REPO" =~ ^https://github.com/ ]]; then
