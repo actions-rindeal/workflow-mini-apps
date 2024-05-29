@@ -53,7 +53,7 @@ jobs:
         with:
           repository: ${{ env.REPO }}
           ref: ${{ env.BRANCH }}
-          depth: 0
+          fetch-depth: 0
           sparse-checkout: '.'
 
       - name: Generate URL
