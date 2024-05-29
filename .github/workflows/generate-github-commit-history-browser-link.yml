@@ -1,4 +1,6 @@
-run-name: "Generate URL for viewing GitHub Commit history ${{ github.event.inputs.repo }}"
+name: "Generate URL for viewing GitHub Commit history"
+
+run-name: "${{ toJSON(github.event.inputs) }}"
 
 on:
   workflow_dispatch:
