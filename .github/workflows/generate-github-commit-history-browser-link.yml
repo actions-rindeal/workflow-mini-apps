@@ -43,7 +43,7 @@ jobs:
             IFS='/' read -ra ADDR <<< "$REPO"
             OWNER="${ADDR[0]}"
             REPO_NAME="${ADDR[1]}"
-            if (( ${#ADDR[@]} >= 2 )) && [[ "${ADDR[2]}" == "tree" ]] ; then
+            if (( ${#ADDR[@]} > 2 )) && [[ "${ADDR[2]}" == "tree" ]] ; then
               BRANCH="$(IFS='/'; printf "%s" "${ADDR[*]:3}")"
               BRANCH="${BRANCH%%\?*}"
             fi
