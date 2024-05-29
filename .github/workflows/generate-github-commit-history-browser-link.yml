@@ -42,7 +42,7 @@ jobs:
             OWNER="${ADDR[0]}"
             REPO_NAME="${ADDR[1]}"
             if (( ${#ADDR[@]} >= 2 )) && [[ "${ADDR[2]}" == "tree" ]] ; then
-              BRANCH="$(IFS='/'; printf "%s" "${ADDR[*]:2}")"
+              BRANCH="$(IFS='/'; printf "%s" "${ADDR[*]:3}")"
               BRANCH="${BRANCH%%\?*}"
             fi
             REPO="${OWNER}/${REPO_NAME}"
