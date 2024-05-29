@@ -33,11 +33,12 @@ jobs:
       - name: Validate inputs
         id: validate-inputs
         env:
-          REPO: ${{ github.event.inputs.repo }}
-          BRANCH: ${{ github.event.inputs.branch }}
-          SINCE_REF: ${{ github.event.inputs.since-ref }}
+          REPO: ${{ inputs.repo }}
+          BRANCH: ${{ inputs.branch }}
+          SINCE_REF: ${{ inputs.since-ref }}
         run: |
-          set-failed() { printf "::error::$1\n" "${@:2}" ; exit 123 ; }
+          set-failed() { printf "::error title=$1::${2-}\n" "${@:2}" ; exit 123 ; }
+
           REPO="${REPO//[[:space:]]/}"
           if [[ "$REPO" =~ ^https://github.com/ ]]; then
             REPO="${REPO#https://github.com/}"
@@ -53,14 +54,14 @@ jobs:
           fi
           BRANCH="${BRANCH//[[:space:]]/}"
           SINCE_REF="${SINCE_REF//[[:space:]]/}"
-          [[ -z "$REPO" ]] && set-failed "No repo input provided."
-          [[ -z "$BRANCH" ]] && set-failed "No repo input provided."
+          [[ -z "$REPO" ]] && set-failed 'No "repo" input provided.'
+          [[ -z "$BRANCH" ]] && set-failed 'No "branch" input provided.'
           if [[ ! "$REPO" =~ ^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$ ]]; then
-            set-failed "Invalid repo format. Please check the input value: '%s'" "$REPO"
+            set-failed 'Invalid "repo" format.' "Please check the input value: '%s'" "$REPO"
             exit 1
           fi
           if [[ ! "$BRANCH" =~ ^[a-zA-Z0-9_./-]+$ ]]; then
-            set-failed "Invalid branch format. Please check the input value: '%s'" "$BRANCH"
+            set-failed 'Invalid "branch" format.' Please check the input value: '%s'" "$BRANCH"
             exit 1
           fi
           printf "REPO=%s\n" "$REPO" >> $GITHUB_ENV
