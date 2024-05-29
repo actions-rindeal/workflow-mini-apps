@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       repo:
-        description: 'owner/repo'
+        description: 'OWNER/REPO or URL (may include branch)'
         required: true
         type: string
       branch:
