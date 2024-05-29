@@ -58,14 +58,14 @@ jobs:
             echo "::error::Invalid branch format. Please check the input value: '${BRANCH}'"
             exit 1
           fi
-          echo "REPO=$REPO" >> $GITHUB_ENV
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-          echo "SINCE_REF=$SINCE_REF" >> $GITHUB_ENV
+          printf "REPO=%s\n" "$REPO" >> $GITHUB_ENV
+          printf "BRANCH=%s\n" "$BRANCH" >> $GITHUB_ENV
+          printf "SINCE_REF=%s\n" "$SINCE_REF" >> $GITHUB_ENV
 
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          repository: "https://github.com/${{ env.REPO }}.git"
+          repository: ${{ env.REPO }}
           ref: ${{ env.BRANCH }}
           fetch-depth: 0
           sparse-checkout: '.'
