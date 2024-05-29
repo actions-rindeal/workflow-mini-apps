@@ -51,11 +51,11 @@ jobs:
           BRANCH="${BRANCH//[[:space:]]/}"
           SINCE_REF="${SINCE_REF//[[:space:]]/}"
           if [[ ! "$REPO" =~ ^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$ ]]; then
-            echo "::error::Invalid repo format. Please check the input value: '${REPO}'"
+            printf "::error::Invalid repo format. Please check the input value: '%s'\n" "$REPO"
             exit 1
           fi
           if [[ ! "$BRANCH" =~ ^[a-zA-Z0-9_./-]+$ ]]; then
-            echo "::error::Invalid branch format. Please check the input value: '${BRANCH}'"
+            printf "::error::Invalid branch format. Please check the input value: '%s'\n" "$BRANCH"
             exit 1
           fi
           printf "REPO=%s\n" "$REPO" >> $GITHUB_ENV
@@ -79,18 +79,26 @@ jobs:
           REV_LIST=$(git rev-list -n1 ${BRANCH})
           REV_COUNT=$(git rev-list --count "${SINCE_REF}..${BRANCH}")
           URL_SUFFIX="?after=${REV_LIST}+$(( "${REV_COUNT}" - 1 ))"
-          echo "URL=../../commits/${BRANCH}/${URL_SUFFIX}" >> $GITHUB_ENV
-          echo "ABSOLUTE_URL=https://github.com/${REPO}/commits/${BRANCH}/${URL_SUFFIX}" >> $GITHUB_ENV
+          printf "RELATIVE_URL=../../commits/%s/%s\n" "${BRANCH}" "${URL_SUFFIX}" >> $GITHUB_ENV
+          printf "ABSOLUTE_URL=https://github.com/%s/commits/%s/%s\n" "${REPO}" "${BRANCH}" "${URL_SUFFIX}" >> $GITHUB_ENV
 
       - name: Print URL
         run: |
-          echo "The relative URL for viewing GitHub Commit history is: $URL"
-          echo "The absolute URL for viewing GitHub Commit history is: $ABSOLUTE_URL"
+          printf "::notice::The relative URL for viewing GitHub Commit history is: %s\n" "$RELATIVE_URL"
+          printf "::notice::The absolute URL for viewing GitHub Commit history is: %s\n" "$ABSOLUTE_URL"
 
-          echo "### The relative URL for viewing GitHub Commit history is:" >> $GITHUB_STEP_SUMMARY
-          echo "[URL][relative-url]" >> $GITHUB_STEP_SUMMARY
-          echo "### The absolute URL for viewing GitHub Commit history is:" >> $GITHUB_STEP_SUMMARY
-          echo "[URL][absolute-url]" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[relative-url]: $URL" >> $GITHUB_STEP_SUMMARY
-          echo "[absolute-url]: $ABSOLUTE_URL" >> $GITHUB_STEP_SUMMARY
+          printf "### The **relative** URL for viewing GitHub Commit history is:\n" >> $GITHUB_STEP_SUMMARY
+          printf "[Relative URL][relative-url]\n" >> $GITHUB_STEP_SUMMARY
+          printf '```url\n' >> $GITHUB_STEP_SUMMARY
+          printf "%s\n" "${RELATIVE_URL}" >> $GITHUB_STEP_SUMMARY
+          printf '```\n' >> $GITHUB_STEP_SUMMARY
+          
+          printf "### The **absolute** URL for viewing GitHub Commit history is:\n" >> $GITHUB_STEP_SUMMARY
+          printf "[Absolute URL][absolute-url]\n" >> $GITHUB_STEP_SUMMARY
+          printf '```url\n' >> $GITHUB_STEP_SUMMARY
+          printf "%s\n" "${ABSOLUTE_URL}" >> $GITHUB_STEP_SUMMARY
+          printf '```\n' >> $GITHUB_STEP_SUMMARY
+          
+          printf "\n" >> $GITHUB_STEP_SUMMARY
+          printf "[relative-url]: %s\n" "$RELATIVE_URL" >> $GITHUB_STEP_SUMMARY
+          printf "[absolute-url]: %s\n" "$ABSOLUTE_URL" >> $GITHUB_STEP_SUMMARY
