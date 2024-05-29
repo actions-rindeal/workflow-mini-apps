@@ -58,6 +58,9 @@ jobs:
       - name: Generate URL
         id: generate-url
         run: |
+          if [[ -z "${SINCE_REF}" ]] ; then
+            SINCE_REF="$(git rev-list --max-parents=0 "${BRANCH}")"
+          fi
           REV_LIST=$(git rev-list -n1 ${BRANCH})
           REV_COUNT=$(git rev-list --count "${SINCE_REF}..${BRANCH}")
           URL_SUFFIX="?after=${REV_LIST}+$(( "${REV_COUNT}" - 1 ))"
