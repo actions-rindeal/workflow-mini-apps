@@ -84,8 +84,8 @@ jobs:
 
       - name: Print URL
         run: |
-          printf "::notice::The relative URL for viewing GitHub Commit history is: %s\n" "$RELATIVE_URL"
-          printf "::notice::The absolute URL for viewing GitHub Commit history is: %s\n" "$ABSOLUTE_URL"
+          printf "::notice::The relative URL for viewing GitHub Commit history is:\n%s\n" "$RELATIVE_URL"
+          printf "::notice::The absolute URL for viewing GitHub Commit history is:\n%s\n" "$ABSOLUTE_URL"
 
           printf "### The **relative** URL for viewing GitHub Commit history is:\n" >> $GITHUB_STEP_SUMMARY
           printf "[Relative URL][relative-url]\n" >> $GITHUB_STEP_SUMMARY
