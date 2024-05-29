@@ -1,4 +1,4 @@
-name: "Generate URL for viewving GitHub Commit hisotyr"
+name: "Generate URL for viewing GitHub Commit history"
 
 on:
   workflow_dispatch:
@@ -8,10 +8,69 @@ on:
         required: true
         type: string
       branch:
-        description: 'Test scenario tags, default is the HEAD branch'
+        description: 'Target branch, default is the HEAD branch'
         required: false
         type: string
       since-ref:
         description: 'Ref from which the history will be browsable, default is from the initial commit of the branch'
         type: string
         required: false
+
+jobs:
+  generate-url:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+      - name: Validate inputs
+        id: validate-inputs
+        env:
+          REPO: ${{ github.event.inputs.repo }}
+          BRANCH: ${{ github.event.inputs.branch }}
+          SINCE_REF: ${{ github.event.inputs.since-ref }}
+        run: |
+          REPO="${REPO//[[:space:]]/}"
+          BRANCH="${BRANCH//[[:space:]]/}"
+          SINCE_REF="${SINCE_REF//[[:space:]]/}"
+          if [[ ! "$REPO" =~ ^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$ ]]; then
+            echo "::error::Invalid repo format. Please check the input value: '${REPO}'"
+            exit 1
+          fi
+          if [[ ! "$BRANCH" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+            echo "::error::Invalid branch format. Please check the input value: '${BRANCH}'"
+            exit 1
+          fi
+          echo "REPO=$REPO" >> $GITHUB_ENV
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          echo "SINCE_REF=$SINCE_REF" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REPO }}
+          ref: ${{ env.BRANCH }}
+
+      - name: Generate URL
+        id: generate-url
+        run: |
+          REV_LIST=$(git rev-list -n1 ${BRANCH})
+          REV_COUNT=$(git rev-list --count "${SINCE_REF}..${BRANCH}")
+          URL_SUFFIX="?after=${REV_LIST}+$(( "${REV_COUNT}" - 1 ))"
+          echo "URL=../../commits/${BRANCH}/${URL_SUFFIX}" >> $GITHUB_ENV
+          echo "ABSOLUTE_URL=https://github.com/${REPO}/commits/${BRANCH}/${URL_SUFFIX}" >> $GITHUB_ENV
+
+      - name: Print URL
+        run: |
+          echo "The relative URL for viewing GitHub Commit history is: $URL"
+          echo "The absolute URL for viewing GitHub Commit history is: $ABSOLUTE_URL"
+
+          echo "### The relative URL for viewing GitHub Commit history is:" >> $GITHUB_STEP_SUMMARY
+          echo "[URL][relative-url]" >> $GITHUB_STEP_SUMMARY
+          echo "### The absolute URL for viewing GitHub Commit history is:" >> $GITHUB_STEP_SUMMARY
+          echo "[URL][absolute-url]" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[relative-url]: $URL" >> $GITHUB_STEP_SUMMARY
+          echo "[absolute-url]: $ABSOLUTE_URL" >> $GITHUB_STEP_SUMMARY
