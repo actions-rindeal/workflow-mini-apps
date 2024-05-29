@@ -40,7 +40,7 @@ jobs:
             echo "::error::Invalid repo format. Please check the input value: '${REPO}'"
             exit 1
           fi
-          if [[ ! "$BRANCH" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+          if [[ ! "$BRANCH" =~ ^[a-zA-Z0-9_.-/]+$ ]]; then
             echo "::error::Invalid branch format. Please check the input value: '${BRANCH}'"
             exit 1
           fi
