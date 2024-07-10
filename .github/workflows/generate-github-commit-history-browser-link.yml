@@ -13,10 +13,13 @@ on:
         description: 'Target branch, default is the HEAD branch'
         required: false
         type: string
+        default: ''
       since-ref:
         description: 'Ref from which the history will be browsable, default is from the initial commit of the branch'
-        type: string
         required: false
+        type: string
+        default: ''
+        
 
 jobs:
   generate-url:
