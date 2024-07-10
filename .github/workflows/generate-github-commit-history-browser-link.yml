@@ -1,40 +1,40 @@
-name: "Generate URL for viewing GitHub Commit history"
+## SPDX-FileCopyrightText: ANNO DOMINI 2024 Jan Chren ~rindeal <dev.rindeal{a}gmail.com>
+## SPDX-License-Identifier: GPL-3.0-only
+
+name: "Generate GitHub.com URL for browsing repo history since initial commit"
 
 run-name: "${{ toJSON(github.event.inputs) }}"
 
 on:
   workflow_dispatch:
     inputs:
-      repo:
+      'repo':
         description: 'OWNER/REPO or URL (may include branch)'
         required: true
         type: string
-      branch:
+      'branch':
         description: 'Target branch, default is the HEAD branch'
         required: false
         type: string
         default: ''
-      since-ref:
+      'since-ref':
         description: 'Ref from which the history will be browsable, default is from the initial commit of the branch'
         required: false
         type: string
         default: ''
-        
 
 jobs:
-  generate-url:
+  'generate-url':
     runs-on: ubuntu-latest
-
     defaults:
       run:
         # -o noclobber: prevent existing regular files from being overwritten by redirection of output
         # -o noexec: This option will not execute commands; it’s useful for checking a script for syntax errors.
         # -o verbose -o xtrace
-        shell: bash --noprofile --norc -o errexit -o pipefail -o nounset   -o verbose -o xtrace    {0}
-    
+        shell: 'bash --noprofile --norc -o errexit -o pipefail -o nounset   -o verbose -o xtrace    {0}'
     steps:
-      - name: Validate inputs
-        id: validate-inputs
+      - name: 'Validate inputs'
+        id: 'validate-inputs'
         env:
           REPO: ${{ inputs.repo }}
           BRANCH: ${{ inputs.branch }}
@@ -71,16 +71,16 @@ jobs:
           printf "BRANCH=%s\n" "$BRANCH" >> $GITHUB_ENV
           printf "SINCE_REF=%s\n" "$SINCE_REF" >> $GITHUB_ENV
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: 'Checkout repository'
+        uses: 'actions/checkout@v4'
         with:
           repository: ${{ env.REPO }}
           ref: ${{ env.BRANCH }}
           fetch-depth: 0
           sparse-checkout: '.'
 
-      - name: Generate URL
-        id: generate-url
+      - name: 'Generate URL'
+        id: 'generate-url'
         run: |
           if [[ -z "${SINCE_REF}" ]] ; then
             SINCE_REF="$(git rev-list --max-parents=0 "${BRANCH}")"
@@ -91,7 +91,7 @@ jobs:
           printf "RELATIVE_URL=../../commits/%s/%s\n" "${BRANCH}" "${URL_SUFFIX}" >> $GITHUB_ENV
           printf "ABSOLUTE_URL=https://github.com/%s/commits/%s/%s\n" "${REPO}" "${BRANCH}" "${URL_SUFFIX}" >> $GITHUB_ENV
 
-      - name: Print URL
+      - name: 'Print URL'
         run: |
           printf "::notice::The relative URL for viewing GitHub Commit history is:\n%s\n" "$RELATIVE_URL"
           printf "::notice::The absolute URL for viewing GitHub Commit history is:\n%s\n" "$ABSOLUTE_URL"
